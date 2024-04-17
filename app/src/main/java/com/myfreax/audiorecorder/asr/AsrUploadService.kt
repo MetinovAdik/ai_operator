@@ -1,5 +1,6 @@
 package com.myfreax.audiorecorder.asr
 
+import RobertaService
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
@@ -9,6 +10,9 @@ import com.myfreax.audiorecorder.openai.OpenAIChatApiService
 import com.myfreax.audiorecorder.openai.OpenAIChatRequest
 import com.myfreax.audiorecorder.openai.OpenAIChatResponse
 import com.myfreax.audiorecorder.openai.OpenAIChatRetrofitClient
+import com.myfreax.audiorecorder.openai.OpenAIChatRetrofitClient.apiService
+import com.myfreax.audiorecorder.roberta.QuestionAnsweringApiService
+import com.myfreax.audiorecorder.roberta.RobertaRetrofitClient
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,7 +24,7 @@ import retrofit2.Response
 class AsrUploadService : Service() {
     private lateinit var apiService: AsrApiService
     private lateinit var openAIApiService: OpenAIChatApiService
-
+    private lateinit var robertaService: RobertaService
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -29,6 +33,7 @@ class AsrUploadService : Service() {
         super.onCreate()
         apiService = RetrofitClient.apiService
         openAIApiService = OpenAIChatRetrofitClient.apiService
+        robertaService = RobertaService(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -83,6 +88,8 @@ class AsrUploadService : Service() {
             override fun onResponse(call: Call<OpenAIChatResponse>, response: Response<OpenAIChatResponse>) {
                 if (response.isSuccessful && response.body() != null) {
                     Log.d("OpenAIChat", "Translation received: ${response.body()?.choices?.firstOrNull()?.message?.content}")
+                    val translation = response.body()?.choices?.firstOrNull()?.message?.content
+                    sendToRoberta(translation)
                 } else {
                     Log.e("OpenAIChat", "Failed to get response from OpenAI: ${response.errorBody()?.string()}")
                 }
@@ -93,7 +100,11 @@ class AsrUploadService : Service() {
             }
         })
     }
-
+    private fun sendToRoberta(text: String?) {
+        if (text != null) {
+            robertaService.askQuestion(text, "The are 2 plans - first is 2$ a month for 5gb , second is 5$ a month for 30gb.")
+        }
+    }
     private fun loggingInterceptor() = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
