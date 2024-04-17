@@ -42,14 +42,9 @@ class MainActivity : AppCompatActivity() {
         stopService(intent)
     }
 
-    private fun switchButtonStyle(boolean: Boolean){
-        if (boolean){
-            recorderRunning = true
-            recorderSwitcher.text = getString(R.string.stop_recording)
-        }else{
-            recorderRunning = false
-            recorderSwitcher.text = getString(R.string.start_recording)
-        }
+    private fun switchButtonStyle(isRecording: Boolean) {
+        recorderRunning = isRecording
+        recorderSwitcher.text = if (isRecording) getString(R.string.stop_recording) else getString(R.string.start_recording)
     }
 
 
