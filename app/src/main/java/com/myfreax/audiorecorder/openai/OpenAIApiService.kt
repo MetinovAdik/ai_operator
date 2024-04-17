@@ -26,7 +26,7 @@ data class Choice(
 )
 
 interface OpenAIChatApiService {
-    @Headers("Authorization: Bearer sk-proj-NGw7sji4WVd9hMdPzCxRT3BlbkFJ47dKC1Lt7DIXUBGLJZyr")  // Replace YOUR_OPENAI_API_KEY with your actual key
+    @Headers("Authorization: Bearer sk-proj-NGw7sji4WVd9hMdPzCxRT3BlbkFJ47dKC1Lt7DIXUBGLJZyr")
     @POST("v1/chat/completions")
     fun createChatCompletion(@Body request: OpenAIChatRequest): Call<OpenAIChatResponse>
 }

@@ -13,8 +13,8 @@ object OpenAIChatRetrofitClient {
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
-        .readTimeout(30, TimeUnit.SECONDS)  // Increase read timeout
-        .connectTimeout(30, TimeUnit.SECONDS)  // Increase connection timeout
+        .readTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(30, TimeUnit.SECONDS)
         .build()
 
     val apiService: OpenAIChatApiService = Retrofit.Builder()
