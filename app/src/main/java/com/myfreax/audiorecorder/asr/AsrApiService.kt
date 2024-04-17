@@ -1,10 +1,14 @@
-package com.myfreax.audiorecorder
+package com.myfreax.audiorecorder.asr
 import retrofit2.Call
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import okhttp3.MultipartBody
 import retrofit2.http.Headers
+data class ApiResponse(
+    val success: Boolean,
+    val text: String
+)
 
 interface AsrApiService {
     @Multipart

@@ -1,4 +1,4 @@
-package com.myfreax.audiorecorder
+package com.myfreax.audiorecorder.asr
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

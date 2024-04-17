@@ -15,7 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AudioRecorder">
-        <service android:name=".AsrUploadService" android:exported="false"/>
+        <service android:name=".asr.AsrUploadService" android:exported="false"/>
 
         <activity
             android:name=".MainActivity"

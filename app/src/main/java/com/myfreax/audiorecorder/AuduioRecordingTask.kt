@@ -7,6 +7,7 @@ import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioPlaybackCaptureConfiguration
 import android.media.AudioRecord
+import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -28,7 +29,6 @@ class AudioRecordingTask(context: Context, mediaProjection: MediaProjection) : C
 
 
     init {
-
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.RECORD_AUDIO
@@ -36,25 +36,17 @@ class AudioRecordingTask(context: Context, mediaProjection: MediaProjection) : C
         ) {
             audioRecord =
                 AudioRecord.Builder()
+                    .setAudioSource(MediaRecorder.AudioSource.MIC) // Use the microphone as the source
                     .setAudioFormat(
                         AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_16BIT)
                             .setSampleRate(44100)
-                            .setChannelMask(
-                                AudioFormat.CHANNEL_IN_MONO
-                            )
+                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
                             .build()
                     )
                     .setBufferSizeInBytes(2 * 1024 * 1024)
-                    .setAudioPlaybackCaptureConfig(
-                        AudioPlaybackCaptureConfiguration.Builder(mediaProjection)
-                            .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
-                            .addMatchingUsage(AudioAttributes.USAGE_GAME)
-                            .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
-                            .build()
-                    )
                     .build()
         } else {
-            throw Exception("AudioPlaybackCapture: Permission Deny")
+            throw SecurityException("Permission Denied: RECORD_AUDIO")
         }
     }
 
