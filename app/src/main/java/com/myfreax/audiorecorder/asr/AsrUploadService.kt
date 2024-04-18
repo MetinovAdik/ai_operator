@@ -3,6 +3,7 @@ package com.myfreax.audiorecorder.asr
 import TtsApiService
 import android.app.Service
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.IBinder
 import android.util.Log
 import com.myfreax.audiorecorder.openai.Message
@@ -26,6 +27,7 @@ class AsrUploadService : Service() {
     private lateinit var apiService: AsrApiService
     private lateinit var openAIApiService: OpenAIChatApiService
     private lateinit var ttsService: TtsService
+    private var mediaPlayer: MediaPlayer? = null
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
@@ -117,18 +119,31 @@ class AsrUploadService : Service() {
     private fun handleAudioResponse(responseBody: ResponseBody) {
         val audioFileName = "downloaded_audio.mp3"
         try {
-            // Получите директорию для файлов приложения
             val file = File(getExternalFilesDir(null), audioFileName)
 
-            // Запишите бинарное содержимое ответа в файл
             responseBody.byteStream().use { inputStream ->
                 FileOutputStream(file).use { outputStream ->
                     inputStream.copyTo(outputStream)
                 }
             }
             Log.d("TtsService", "Аудиофайл успешно сохранен: $audioFileName")
+            playAudio(file.path)
         } catch (e: IOException) {
             Log.e("TtsService", "Ошибка при сохранении аудиофайла: ${e.message}")
+        }
+    }
+
+    private fun playAudio(filePath: String) {
+        mediaPlayer?.release()  // Освобождаем ресурсы предыдущего MediaPlayer, если он был создан
+        mediaPlayer = MediaPlayer().apply {
+            try {
+                setDataSource(filePath)
+                prepare()  // Подготовка MediaPlayer к воспроизведению
+                start()  // Начало воспроизведения
+                Log.d("MediaPlayer", "Воспроизведение начато: $filePath")
+            } catch (e: IOException) {
+                Log.e("MediaPlayer", "Ошибка при воспроизведении аудио: ${e.message}")
+            }
         }
     }
     private fun sendTextToOpenAI(text: String) {
